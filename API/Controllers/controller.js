@@ -5,27 +5,54 @@ const jwt = require("jsonwebtoken");
 const User = require("../Models/users");
 
 // get all users
-const getUsers = (req, res) => {
-  pool.query(queries.getUsers, (error, results) => {
-    if (error) {
-      return error;
-    } else {
-      res.status(200).json(results.rows);
+const getUsers = async (req, res) => {
+  try {
+    const allUsers = await User.findAll();
+
+    if(allUsers.length < 1) {
+     return res.status(500).send('No Users')
     }
-  });
+    res.status(200).json({users: allUsers})
+  
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+
+
+
+  // pool.query(queries.getUsers, (error, results) => {
+  //   if (error) {
+  //     return error;
+  //   } else {
+  //     res.status(200).json(results.rows);
+  //   }
+  // });
 };
 
 //get user by id
-const getUserById = (req, res) => {
-  const user_id = parseInt(req.params.user_id);
-  pool.query(queries.getUserById, [user_id], (error, results) => {
-    if (error) {
-      res.sendStatus(500);
-      return error;
-    } else {
-      res.status(200).json(results.rows);
+const getUserById = async (req, res) => {
+  try {
+    const userId = parseInt(req.params.id)
+    const user = await User.findAll({where: {id: userId}})
+    if(user.length < 1) {
+      return res.status(400).json({ message: "User does not exist" });
     }
-  });
+    res.status(200).json({users: user})
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+
+  // const user_id = parseInt(req.params.user_id);
+  // pool.query(queries.getUserById, [user_id], (error, results) => {
+  //   if (error) {
+  //     res.sendStatus(500);
+  //     return error;
+  //   } else {
+  //     res.status(200).json(results.rows);
+  //   }
+  // });
 };
 
 const addUser = async (req, res) => {
@@ -134,41 +161,65 @@ const loginUser = async (req, res) => {
 //   });
 // };
 
-const updateUser = (req, res) => {
-  const id = parseInt(req.params.user_id);
-  const { username } = req.body;
-  pool.query(queries.getUserById, [id], (error, results) => {
-    const noStudentFound = !results.rows.length;
-    if (noStudentFound) {
-      return res.send("User Does Not Exist");
+const updateUser = async (req, res) => {
+  try {
+    const userId = parseInt(req.params.id);
+    const { username, email } = req.body;
+    const updateValues = {username: username, email: email}
+    const user = await User.findAll({where: {id: userId}})
+    if(user.length < 1) {
+      return res.status(400).json({ message: "User does not exist" });
     }
-    pool.query(queries.updateUser, [username, id], (error, results) => {
-      if (error) {
-        res.sendStatus(500);
-        return error;
-      } else {
-        res.status(200).send("User Updated Succesfully");
-      }
-    });
-  });
+    await User.update(updateValues, {where: {id: userId}})
+    res.status(200).json({message: 'Updated Succesfully', user: updateValues})
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+  // pool.query(queries.getUserById, [id], (error, results) => {
+  //   const noStudentFound = !results.rows.length;
+  //   if (noStudentFound) {
+  //     return res.send("User Does Not Exist");
+  //   }
+  //   pool.query(queries.updateUser, [username, id], (error, results) => {
+  //     if (error) {
+  //       res.sendStatus(500);
+  //       return error;
+  //     } else {
+  //       res.status(200).send("User Updated Succesfully");
+  //     }
+  //   });
+  // });
 };
 
-const deleteUser = (req, res) => {
-  const id = parseInt(req.params.user_id);
-  pool.query(queries.getUserById, [id], (error, results) => {
-    const noStudentFound = !results.rows.length;
-    if (noStudentFound) {
-      return res.send("User Does Not Exist");
+const deleteUser = async (req, res) => {
+  try {
+    const userId = parseInt(req.params.id)
+    const user = await User.destroy({where: {id: userId}})
+    if(user.length < 1) {
+      return res.status(400).json({ message: "User does not exist" });
     }
-    pool.query(queries.deleteUser, [id], (error, results) => {
-      if (error) {
-        res.sendStatus(500);
-        return error;
-      } else {
-        res.status(200).send("User Deleted Succesfully");
-      }
-    });
-  });
+    res.status(200).json({message: 'User Deleted Succesfully'})
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+
+  // pool.query(queries.getUserById, [id], (error, results) => {
+  //   const noStudentFound = !results.rows.length;
+  //   if (noStudentFound) {
+  //     return res.send("User Does Not Exist");
+  //   }
+  //   pool.query(queries.deleteUser, [id], (error, results) => {
+  //     if (error) {
+  //       res.sendStatus(500);
+  //       return error;
+  //     } else {
+  //       res.status(200).send("User Deleted Succesfully");
+  //     }
+  //   });
+  // });
 };
 
 module.exports = {

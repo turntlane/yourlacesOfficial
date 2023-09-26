@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { API_URL } from '../../Config';
-import { useHistory } from 'react-router-dom';
+// import { useHistory } from 'react-router-dom';
 
 
 interface User {
@@ -14,7 +14,7 @@ const Login = () => {
     email: '',
     password: '',
   });
-  const history = useHistory();
+  // const history = useHistory();
   const { email, password } = formData;
 
   const handleChange = (e: any) => {

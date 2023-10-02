@@ -1,25 +1,25 @@
-const pool = require("../DB/database");
-const queries = require("../Queries/queries");
+// require("../DB/database");
+// const queries = require("../Queries/queries");
+const connectDb = require("../Config/dbConn");
+
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../Models/users");
 
+connectDb();
 // get all users
 const getUsers = async (req, res) => {
   try {
     const allUsers = await User.findAll();
 
-    if(allUsers.length < 1) {
-     return res.status(500).send('No Users')
+    if (allUsers.length < 1) {
+      return res.status(500).send("No Users");
     }
-    res.status(200).json({users: allUsers})
-  
+    res.status(200).json({ users: allUsers });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
-
-
 
   // pool.query(queries.getUsers, (error, results) => {
   //   if (error) {
@@ -33,12 +33,12 @@ const getUsers = async (req, res) => {
 //get user by id
 const getUserById = async (req, res) => {
   try {
-    const userId = parseInt(req.params.id)
-    const user = await User.findAll({where: {id: userId}})
-    if(user.length < 1) {
+    const userId = parseInt(req.params.id);
+    const user = await User.findAll({ where: { id: userId } });
+    if (user.length < 1) {
       return res.status(400).json({ message: "User does not exist" });
     }
-    res.status(200).json({users: user})
+    res.status(200).json({ users: user });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
@@ -165,14 +165,15 @@ const updateUser = async (req, res) => {
   try {
     const userId = parseInt(req.params.id);
     const { username, email } = req.body;
-    const updateValues = {username: username, email: email}
-    const user = await User.findAll({where: {id: userId}})
-    if(user.length < 1) {
+    const updateValues = { username: username, email: email };
+    const user = await User.findAll({ where: { id: userId } });
+    if (user.length < 1) {
       return res.status(400).json({ message: "User does not exist" });
     }
-    await User.update(updateValues, {where: {id: userId}})
-    res.status(200).json({message: 'Updated Succesfully', user: updateValues})
-
+    await User.update(updateValues, { where: { id: userId } });
+    res
+      .status(200)
+      .json({ message: "Updated Succesfully", user: updateValues });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
@@ -195,12 +196,12 @@ const updateUser = async (req, res) => {
 
 const deleteUser = async (req, res) => {
   try {
-    const userId = parseInt(req.params.id)
-    const user = await User.destroy({where: {id: userId}})
-    if(user.length < 1) {
+    const userId = parseInt(req.params.id);
+    const user = await User.destroy({ where: { id: userId } });
+    if (user.length < 1) {
       return res.status(400).json({ message: "User does not exist" });
     }
-    res.status(200).json({message: 'User Deleted Succesfully'})
+    res.status(200).json({ message: "User Deleted Succesfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
@@ -222,6 +223,20 @@ const deleteUser = async (req, res) => {
   // });
 };
 
+const checkEmail = async (req, res) => {
+  try {
+    const { email } = req.body;
+    // Check if the user exists
+    const user = await User.findOne({ where: { email } });
+    if (user) {
+      return res.status(401).json({ message: "Email Already Exists" });
+    }
+    return res.status(200).json({ message: "Success" });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 module.exports = {
   getUsers,
   getUserById,
@@ -229,4 +244,5 @@ module.exports = {
   loginUser,
   updateUser,
   deleteUser,
+  checkEmail,
 };

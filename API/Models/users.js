@@ -1,6 +1,6 @@
 // models/User.js
 const { Sequelize, DataTypes } = require("sequelize");
-require("dotenv").config();
+// require("dotenv").config();
 const sequelize = new Sequelize(
   process.env.POSTGRES_DB,
   process.env.POSTGRES_USER,
@@ -11,7 +11,7 @@ const sequelize = new Sequelize(
   }
 );
 
-const User = sequelize.define("testuser", {
+const User = sequelize.define("testusers3", {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -33,6 +33,14 @@ const User = sequelize.define("testuser", {
   password: {
     type: DataTypes.STRING,
     allowNull: false,
+  },
+  roles: {
+    type: DataTypes.ARRAY(DataTypes.STRING),
+    defaultValue: ["user"],
+  },
+  active: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true,
   },
 });
 

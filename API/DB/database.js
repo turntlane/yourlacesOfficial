@@ -1,5 +1,10 @@
 const Pool = require("pg").Pool;
+const pg = require("pg");
 require("dotenv").config();
+
+// const client = new pg.Client(process.env.PG_CON_STRING);
+// client.connect();
+
 const pool = new Pool({
   user: process.env.POSTGRES_USER,
   host: process.env.POSTGRES_HOST,

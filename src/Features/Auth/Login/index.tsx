@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "../../Config/";
+import axios from "../../../Config";
 // import { API_URL } from '../../Config';
 // import { useHistory } from 'react-router-dom';
 

@@ -1,12 +1,12 @@
 // require("../DB/database");
 // const queries = require("../Queries/queries");
-const connectDb = require("../Config/dbConn");
+// const connectDb = require("../Config/dbConn");
 
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../Models/users");
 
-connectDb();
+// connectDb();
 // get all users
 const getUsers = async (req, res) => {
   try {

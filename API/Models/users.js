@@ -1,6 +1,10 @@
 // models/User.js
 const { Sequelize, DataTypes } = require("sequelize");
+const connectDb = require("../Config/dbConn");
 // require("dotenv").config();
+
+connectDb();
+
 const sequelize = new Sequelize(
   process.env.POSTGRES_DB,
   process.env.POSTGRES_USER,

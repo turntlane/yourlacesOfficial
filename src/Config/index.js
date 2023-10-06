@@ -1,4 +1,5 @@
 import axios from "axios";
+export const API_URL = "http://localhost:4000/api/v1";
 export const USERS_URL = "/users";
 export const REGISTER_URL = "/users/";
 

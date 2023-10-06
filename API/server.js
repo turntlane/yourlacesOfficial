@@ -1,49 +1,49 @@
 const express = require("express");
-const userRoutes = require("./Routes/routes");
+require('express-async-errors')
+const userRoutes = require("./Routes/userRoutes");
+const authRoutes = require("./Routes/authRoutes");
+const rootRoutes = require("./Routes/root");
 const app = express();
 const cors = require("cors");
 require("dotenv").config();
-const connectDb = require("./Config/dbConn");
 const path = require("path");
 const bodyParser = require("body-parser");
 const { logger, logEvents } = require("./Middleware/logger");
-const errorHandler = require("./Middleware/errorHandler");
-// const cookieParser = require("cookie-parser");xwx
 const corsOptions = require("./Config/corsOption");
+const errorHandler = require("./Middleware/errorHandler");
+const cookieParser = require("cookie-parser");
 const port = 4000;
 
-// app.use(logger);
+console.log(process.env.NODE_ENV)
 
-connectDb();
+app.use(logger)
 
-app.use(cors(corsOptions));
+app.use(cors(corsOptions))
 
-app.use(express.json());
+app.use(express.json())
 
-// app.use(cookieParser());
+app.use(cookieParser())
 
-app.use("/", express.static(path.join(__dirname, "public")));
+app.use('/', express.static(path.join(__dirname, 'public')))
 
-app.use(express.json());
+// app.use("/api/v1/users", userRoutes);
 
-// app.get("/", (req, res) => {
-//   res.send(200, {
-//     message: "Hello There",
-//   });
-// });
+app.use('/', rootRoutes)
+app.use('/api/v1/auth', authRoutes)
+app.use('/api/v1/users', userRoutes)
+// app.use('/notes', require('./routes/noteRoutes'))
 
-app.use("/api/v1/users", userRoutes);
-
-app.all("*", (req, res) => {
-  res.status(404);
-  if (req.accepts("html")) {
-    res.sendFile(path.join(__dirname, "views", "404.html"));
-  } else if (req.accepts("json")) {
-    res.json({ message: "404 Not Found" });
-  } else {
-    res.type("txt").send("404 Not Found");
-  }
-});
+app.all('*', (req, res) => {
+    res.status(404)
+    if (req.accepts('tsx')) {
+        console.log('we are here')
+        res.sendFile(path.join(__dirname, '..', 'src', 'Errors', 'page404.tsx'))
+    } else if (req.accepts('json')) {
+        res.json({ message: '404 Not Found' })
+    } else {
+        res.type('txt').send('404 Not Found')
+    }
+})
 
 app.use(errorHandler);
 

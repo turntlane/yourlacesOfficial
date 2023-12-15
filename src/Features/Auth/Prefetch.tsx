@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { store } from "../../Store/store";
-import { usersApiSlice } from "../Users/usersApiSlice";
+import { usersApiSlice } from "../../Pages/Users/usersApiSlice";
 import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 

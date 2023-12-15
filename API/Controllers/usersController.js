@@ -35,6 +35,8 @@ const getAllUsers = async (req, res) => {
 const createNewUser = async (req, res) => {
   const { username, email, password, roles } = req.body;
 
+  console.log("req body", req.body);
+
   // Confirm data
   if (!username || !password) {
     return res.status(400).json({ message: "All fields are required" });
@@ -53,6 +55,8 @@ const createNewUser = async (req, res) => {
     !Array.isArray(roles) || !roles.length
       ? { username, email, password: hashedPwd }
       : { username, email, password: hashedPwd, roles };
+
+  console.log("user obj", userObject);
 
   // Create and store new user
   const user = await User.create(userObject);

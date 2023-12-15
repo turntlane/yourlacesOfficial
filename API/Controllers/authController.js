@@ -6,13 +6,15 @@ const jwt = require("jsonwebtoken");
 // @route POST /auth
 // @access Public
 const login = async (req, res) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
 
-  if (!username || !password) {
+  console.log("we are here");
+
+  if (!email || !password) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
-  const foundUser = await User.findOne({ where: { username } });
+  const foundUser = await User.findOne({ where: { email: email } });
 
   if (!foundUser || !foundUser.active) {
     return res.status(401).json({ message: "Unauthorized" });
@@ -25,18 +27,18 @@ const login = async (req, res) => {
   const accessToken = jwt.sign(
     {
       UserInfo: {
-        username: foundUser.username,
+        email: foundUser.email,
         roles: foundUser.roles,
       },
     },
     process.env.JWT_SECRET,
-    { expiresIn: "1m" }
+    { expiresIn: "30s" }
   );
 
   const refreshToken = jwt.sign(
-    { username: foundUser.username },
+    { email: foundUser.email },
     process.env.JWT_REFRESH,
-    { expiresIn: process.env.JWT_EXPIRES_IN }
+    { expiresIn: "40s" }
   );
 
   // Create secure cookie with refresh token
@@ -47,6 +49,7 @@ const login = async (req, res) => {
     maxAge: 7 * 24 * 60 * 60 * 1000, //cookie expiry: set to match rT
   });
 
+  console.log("access token: ", accessToken);
   // Send accessToken containing username and roles
   res.json({ accessToken });
 };
@@ -79,7 +82,7 @@ const refresh = (req, res) => {
         },
       },
       process.env.JWT_SECRET,
-      { expiresIn: "15m" }
+      { expiresIn: "40s" }
     );
 
     res.json({ accessToken });

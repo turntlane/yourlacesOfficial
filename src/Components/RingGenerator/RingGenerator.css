@@ -1,0 +1,20 @@
+.ring-generator .collage {
+  /* Add styling for your image collage */
+  padding: 20px;
+}
+
+.ring-generator .input-container {
+  margin: 20px;
+}
+
+.ring-generator input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+}
+
+@media (max-width: 600px) {
+  .ring-generator input {
+    width: auto;
+  }
+}

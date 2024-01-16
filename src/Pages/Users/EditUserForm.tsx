@@ -1,6 +1,9 @@
-// @ts-nocheck
+//@ts-nocheck
 import { useState, useEffect } from "react";
-import { useUpdateUserMutation, useDeleteUserMutation } from "./usersApiSlice";
+import {
+  useUpdateUserMutation,
+  useDeleteUserMutation,
+} from "../../Store/Users/usersApiSlice";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSave, faTrashCan } from "@fortawesome/free-solid-svg-icons";
@@ -96,11 +99,6 @@ const EditUserForm = ({ user }) => {
     : "";
 
   const errContent = (error?.data?.message || delerror?.data?.message) ?? "";
-
-  useEffect(() => {
-    console.log("username:", username);
-    console.log("password:", password);
-  }, [username, password]);
 
   const content = (
     <>

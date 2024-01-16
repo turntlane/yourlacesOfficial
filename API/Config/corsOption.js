@@ -4,6 +4,7 @@ const whitelist = [
   "http://localhost:4000",
   "http://localhost:4000/api/v1",
   "http://localhost:3000",
+  "http://localhost:3000/login",
   "http://localhost:3000/api/v1",
 ];
 
@@ -15,6 +16,7 @@ const corsOptions = {
       callback(new Error("Not allowed by CORS"));
     }
   },
+  credentials: true,
   optionsSuccessStatus: 200,
 };
 

@@ -1,22 +1,27 @@
-// @ts-nocheck
-import { useGetUsersQuery } from "./usersApiSlice";
-import Users from "./Users";
+//@ts-nocheck
+import { useGetUsersQuery } from "../../Store/Users/usersApiSlice";
+import User from "./Users";
+import useTitle from "../../Hooks/useTitle";
+// import PulseLoader from "react-spinners/PulseLoader";
 
 const UsersList = () => {
+  useTitle("techNotes: Users List");
+
   const {
     data: users,
     isLoading,
     isSuccess,
     isError,
     error,
-  } = useGetUsersQuery(undefined, {
-    pollingInterval: 1500,
+  } = useGetUsersQuery("usersList", {
+    pollingInterval: 60000,
     refetchOnFocus: true,
     refetchOnMountOrArgChange: true,
   });
 
-  let content: any;
-  if (isLoading) content = <p>Loading...</p>;
+  let content;
+
+  if (isLoading) content = <div>Loading...</div>;
 
   if (isError) {
     content = <p className="errmsg">{error?.data?.message}</p>;
@@ -25,9 +30,10 @@ const UsersList = () => {
   if (isSuccess) {
     const { ids } = users;
 
-    const tableContent = ids?.length
-      ? ids.map((userId) => <Users key={userId} userId={userId} />)
-      : null;
+    const tableContent =
+      ids?.length && ids.map((userId) => <User key={userId} userID={userId} />);
+
+    console.log("helllloooooo: ", users);
 
     content = (
       <table className="table table--users">

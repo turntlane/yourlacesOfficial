@@ -3,7 +3,6 @@ require("dotenv").config();
 
 const { Client } = require("pg");
 const { Sequelize } = require("sequelize");
-// require("dotenv").config();
 const sequelize = new Sequelize(
   process.env.POSTGRES_DB,
   process.env.POSTGRES_USER,
@@ -23,6 +22,4 @@ const connectDb = async () => {
   }
 };
 
-// connectDb();
-
-module.exports = connectDb;
+module.exports = { connectDb, sequelize };

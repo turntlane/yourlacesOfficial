@@ -1,56 +1,64 @@
 //@ts-nocheck
-import React, { useEffect } from "react";
-import "./App.css";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { refreshToken } from "./Store/actions/authActions";
-import Home from "./Pages/Home";
-import Login from "./Pages/Login/Login";
-import Register from "./Pages/Register";
+import { Routes, Route } from "react-router-dom";
 import Layout from "./Components/Layout";
-// import DashLayout from "./Components/DashLayout";
+import Public from "./Components/Public";
+import Login from "./Pages/Login/Login";
+import DashLayout from "./Components/DashLayout";
 import Welcome from "./Features/Auth/Welcome";
-import Users from "./Pages/Users/Users";
 import UsersList from "./Pages/Users/UsersList";
+import UserProfile from "./Pages/Users/UserProfile";
 import EditUser from "./Pages/Users/EditUser";
 import NewUserForm from "./Pages/Users/NewUserForm";
+import Forum from "./Pages/Forum/Forum";
+import Threads from "./Pages/Threads/Threads";
 import Prefetch from "./Features/Auth/Prefetch";
-// import PersistLogin from "./Store/Auth/PersistLogin";
+import PersistLogin from "./Pages/Login/PersistLogin";
+import RequireAuth from "./Features/Auth/RequireAuth";
+import { ROLES } from "./Config/roles";
+import useTitle from "./Hooks/useTitle";
 
 function App() {
-  const dispatch = useDispatch();
-  const { accessToken, refreshToken: storedRefreshToken } = useSelector(
-    (state) => state.auth
-  );
+  useTitle("Yourlaces");
 
-  useEffect(() => {
-    if (storedRefreshToken && !accessToken) {
-      dispatch(refreshToken(storedRefreshToken));
-    }
-  }, [storedRefreshToken, accessToken, dispatch]);
   return (
-    // <Router>
     <Routes>
       <Route path="/" element={<Layout />}>
-        <Route index element={<Welcome />} />
-        <Route path="login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        {/* <Route element={<PersistLogin />}> */}
-        <Route element={<Prefetch />}>
-          {/* <Route path="dash" element={<DashLayout />}> */}
+        {/* public routes */}
+        <Route element={<DashLayout />}>
           <Route index element={<Welcome />} />
+          <Route path="login" element={<Login />} />
+          <Route path="forum/:id" element={<Forum />} />
+          <Route path="threads/:id" element={<Threads />} />
+          {/* Protected Routes */}
+          <Route element={<PersistLogin />}>
+            <Route element={<RequireAuth />}>
+              <Route element={<Prefetch />}>
+                {/* <Route path="/" element={<DashLayout />}> */}
+                {/* <Route index element={<Welcome />} /> */}
 
-          <Route path="users">
-            <Route index element={<UsersList />} />
-            <Route path=":id" element={<EditUser />} />
-            <Route path="new" element={<NewUserForm />} />
+                <Route element={<RequireAuth />}>
+                  <Route path="users">
+                    {/* <Route index element={<UsersList />} /> */}
+                    <Route index element={<UserProfile />} />
+                    {/* <Route path=":id" element={<EditUser />} /> */}
+                    <Route path="new" element={<NewUserForm />} />
+                  </Route>
+                </Route>
+
+                {/* <Route path="notes">
+                  <Route index element={<NotesList />} />
+                  <Route path=":id" element={<EditNote />} />
+                  <Route path="new" element={<NewNote />} />
+                </Route> */}
+                {/* </Route> */}
+                {/* End Dash */}
+              </Route>
+            </Route>
           </Route>
+          {/* End Protected Routes */}
         </Route>
       </Route>
-      {/* </Route> */}
-      {/* </Route> */}
     </Routes>
-    // </Router>
   );
 }
 

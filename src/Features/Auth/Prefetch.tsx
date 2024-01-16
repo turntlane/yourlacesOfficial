@@ -1,18 +1,21 @@
-// @ts-nocheck
+// import { store } from "../../app/store";
+import { postApiSlice } from "../../Store/Posts/postApiSlice";
 import { store } from "../../Store/store";
-import { usersApiSlice } from "../../Pages/Users/usersApiSlice";
+import { usersApiSlice } from "../../Store/Users/usersApiSlice";
 import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 
 const Prefetch = () => {
   useEffect(() => {
-    console.log("subscribing");
-    const users = store.dispatch(usersApiSlice.endpoints.getUsers.initiate());
-
-    return () => {
-      console.log("unsubscribing");
-      users.unsubscribe();
-    };
+    // store.dispatch(
+    //   notesApiSlice.util.prefetch("getNotes", "notesList", { force: true })
+    // );
+    store.dispatch(
+      usersApiSlice.util.prefetch("getUsers", "usersList", { force: true })
+    );
+    store.dispatch(
+      postApiSlice.util.prefetch("getPosts", "postsList", { force: true })
+    );
   }, []);
 
   return <Outlet />;

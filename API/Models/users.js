@@ -1,22 +1,9 @@
 // models/User.js
-const { Sequelize, DataTypes } = require("sequelize");
-const connectDb = require("../Config/dbConn");
-// require("dotenv").config();
+const { DataTypes } = require("sequelize");
+const { sequelize } = require("../Config/dbConn");
 
-connectDb();
-
-const sequelize = new Sequelize(
-  process.env.POSTGRES_DB,
-  process.env.POSTGRES_USER,
-  process.env.POSTGRES_PASSWORD,
-  {
-    host: process.env.POSTGRES_HOST,
-    dialect: "postgres",
-  }
-);
-
-const User = sequelize.define("testusers3", {
-  id: {
+const User = sequelize.define("testusers", {
+  userID: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
@@ -38,6 +25,14 @@ const User = sequelize.define("testusers3", {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  contactInfo: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  userRating: {
+    type: DataTypes.FLOAT,
+    defaultValue: 0,
+  },
   roles: {
     type: DataTypes.ARRAY(DataTypes.STRING),
     defaultValue: ["user"],
@@ -47,8 +42,6 @@ const User = sequelize.define("testusers3", {
     defaultValue: true,
   },
 });
-
-// Create the table if it doesn't exist
 User.sync();
 
 module.exports = User;

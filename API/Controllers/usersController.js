@@ -1,5 +1,4 @@
-const User = require("../Models/users");
-// const Note = require('../models/Note')
+const db = require("../Models/index");
 const bcrypt = require("bcrypt");
 
 // @desc Get all users
@@ -7,7 +6,7 @@ const bcrypt = require("bcrypt");
 // @access Private
 const getAllUsers = async (req, res) => {
   try {
-    const allUsers = await User.findAll();
+    const allUsers = await db.User.findAll();
 
     if (allUsers.length < 1) {
       return res.status(500).send("No Users");
@@ -17,16 +16,6 @@ const getAllUsers = async (req, res) => {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
-
-  // // Get all users from MongoDB
-  // const users = await User.find().select('-password').lean()
-
-  // // If no users
-  // if (!users?.length) {
-  //     return res.status(400).json({ message: 'No users found' })
-  // }
-
-  // res.json(users)
 };
 
 // @desc Create new user
@@ -43,7 +32,7 @@ const createNewUser = async (req, res) => {
   }
 
   // Check if the user already exists
-  const existingUser = await User.findOne({ where: { email } });
+  const existingUser = await db.User.findOne({ where: { email } });
   if (existingUser) {
     return res.status(400).json({ message: "User already exists" });
   }
@@ -59,7 +48,7 @@ const createNewUser = async (req, res) => {
   console.log("user obj", userObject);
 
   // Create and store new user
-  const user = await User.create(userObject);
+  const user = await db.User.create(userObject);
 
   if (user) {
     //created
@@ -89,14 +78,14 @@ const updateUser = async (req, res) => {
   }
 
   // Does the user exist to update?
-  const user = await User.findOne({ where: { id: id } });
+  const user = await db.User.findOne({ where: { id: id } });
 
   if (!user) {
     return res.status(400).json({ message: "User not found" });
   }
 
   // Check for duplicate
-  const duplicate = await User.findOne({ where: { username: username } });
+  const duplicate = await db.User.findOne({ where: { username: username } });
 
   // Allow updates to the original user
   if (duplicate && duplicate?.id.toString() !== id) {
@@ -121,21 +110,15 @@ const updateUser = async (req, res) => {
 // @route DELETE /users
 // @access Private
 const deleteUser = async (req, res) => {
-  const { id } = req.body;
+  const { userID } = req.body;
 
   // Confirm data
-  if (!id) {
+  if (!userID) {
     return res.status(400).json({ message: "User ID Required" });
   }
 
-  // Does the user still have assigned notes?
-  // const note = await Note.findOne({ user: id }).lean().exec()
-  // if (note) {
-  //     return res.status(400).json({ message: 'User has assigned notes' })
-  // }
-
   // Does the user exist to delete?
-  const user = await User.findOne({ where: { id: id } });
+  const user = await db.User.findOne({ where: { userID: userID } });
 
   if (!user) {
     return res.status(400).json({ message: "User not found" });
@@ -148,8 +131,47 @@ const deleteUser = async (req, res) => {
   res.json(reply);
 };
 
+// @desc Delete a user
+// @route DELETE /users
+// @access Private
+const getUserByID = async (req, res) => {
+  const { userID } = req.user.userID;
+
+  console.log("req.user.userID", userID);
+
+  try {
+    // Confirm data
+    if (!userID) {
+      return res.status(400).json({ message: "User ID Required" });
+    }
+
+    // Does the user exist to delete?
+    const user = await db.User.findOne({ where: { userID: userID } });
+
+    if (!user) {
+      return res.status(400).json({ message: "User not found" });
+    }
+
+    res.status(200).json({
+      user: {
+        username: user.username,
+        email: user.email,
+        contactInfo: user.contactInfo,
+        userRating: user.userRating,
+        roles: user.roles,
+        createdAt: user.createdAt,
+      },
+    });
+    // res.status(200).json(user);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error });
+  }
+};
+
 module.exports = {
   getAllUsers,
+  getUserByID,
   createNewUser,
   updateUser,
   deleteUser,
